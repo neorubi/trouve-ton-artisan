@@ -1,47 +1,58 @@
 import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import ArtisanCard from "../components/ArtisanCard.jsx";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
+
 function CategoryPage() {
-  const { slug } = useParams();
+  const { categorieSlug } = useParams();
+  const [artisans, setArtisans] = useState([]);
+  const [categoryLabel, setCategoryLabel] = useState("");
 
-  // Plus tard : appel API /artisans?categorie=slug
-  const dummyArtisans = [
-    {
-      id: 10,
-      nom: "Artisan exemple",
-      note: 4.2,
-      ville: "Lyon",
-      specialite: { nom: "Maçon" },
-    },
-  ];
+  useEffect(() => {
+    async function fetchArtisans() {
+      try {
+        const res = await fetch(`${API_URL}/artisans`);
+        if (!res.ok) throw new Error("Erreur API artisans");
+        const data = await res.json();
 
-  const label =
-    slug === "batiment"
-      ? "Bâtiment"
-      : slug === "services"
-      ? "Services"
-      : slug === "fabrication"
-      ? "Fabrication"
-      : slug === "alimentation"
-      ? "Alimentation"
-      : "Résultats";
+        // On filtre côté front en fonction du slug de la catégorie
+        const filtered = data.filter(
+          (a) => a.Specialty?.Category?.slug === categorieSlug
+        );
+        setArtisans(filtered);
+
+        if (filtered[0]?.Specialty?.Category?.nom) {
+          setCategoryLabel(filtered[0].Specialty.Category.nom);
+        } else {
+          // fallback simple
+          setCategoryLabel(categorieSlug);
+        }
+      } catch (err) {
+        console.error(err);
+        setArtisans([]);
+      }
+    }
+    fetchArtisans();
+  }, [categorieSlug]);
 
   return (
     <div className="space-y-4">
-      <header>
-        <h1 className="text-2xl font-semibold text-[#00497c] mb-1">
-          Artisans — {label}
-        </h1>
-        <p className="text-sm text-slate-600">
-          Liste des artisans correspondant à la catégorie ou à la recherche.
-        </p>
-      </header>
+      <h1 className="text-xl font-semibold text-[#00497c]">
+        Artisans — {categoryLabel}
+      </h1>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        {dummyArtisans.map((artisan) => (
-          <ArtisanCard key={artisan.id} artisan={artisan} />
-        ))}
-      </div>
+      {artisans.length === 0 ? (
+        <p className="text-sm text-gray-600">
+          Aucun artisan trouvé pour cette catégorie pour le moment.
+        </p>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2">
+          {artisans.map((a) => (
+            <ArtisanCard key={a.id} artisan={a} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

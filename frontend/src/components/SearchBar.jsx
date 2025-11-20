@@ -1,19 +1,25 @@
-function SearchBar({ value, onChange, onSubmit }) {
+import { useState } from "react";
+
+function SearchBar({ onSearch }) {
+  const [value, setValue] = useState("");
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    onSearch?.(value);
+  }
+
   return (
-    <form
-      onSubmit={onSubmit}
-      className="flex items-center gap-2 w-full md:w-72 bg-white rounded-full px-3 py-1 shadow-sm"
-    >
+    <form onSubmit={handleSubmit} className="flex gap-1">
       <input
         type="search"
         placeholder="Rechercher un artisan..."
-        className="flex-1 bg-transparent text-sm text-[#384050] outline-none"
+        className="flex-1 rounded-l border border-gray-300 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#0074c7]"
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => setValue(e.target.value)}
       />
       <button
         type="submit"
-        className="text-xs font-semibold px-3 py-1 rounded-full bg-[#82b864] text-white hover:bg-[#6ba34d]"
+        className="bg-[#0074c7] text-white text-sm px-3 py-1 rounded-r hover:bg-[#00497c]"
       >
         Rechercher
       </button>

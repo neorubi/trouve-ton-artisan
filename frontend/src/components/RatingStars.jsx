@@ -1,24 +1,19 @@
 function RatingStars({ value }) {
-  const stars = [];
-  const rounded = Math.round(value);
-
-  for (let i = 1; i <= 5; i++) {
-    stars.push(
-      <span
-        key={i}
-        className={
-          i <= rounded ? "text-yellow-400" : "text-blue-200"
-        }
-      >
-        ★
-      </span>
-    );
-  }
+  const note = Number(value) || 0;
+  const stars = [1, 2, 3, 4, 5];
 
   return (
-    <span className="inline-flex items-center gap-1">
-      {stars} <span className="text-xs text-[#384050]">{value.toFixed(1)}</span>
-    </span>
+    <div className="flex items-center gap-1">
+      {stars.map((s) => (
+        <span
+          key={s}
+          className={s <= note ? "text-yellow-400" : "text-gray-300"}
+        >
+          ★
+        </span>
+      ))}
+      <span className="text-xs text-gray-600 ml-1">({note.toFixed(1)}/5)</span>
+    </div>
   );
 }
 

@@ -2,30 +2,25 @@ import { Link } from "react-router-dom";
 import RatingStars from "./RatingStars.jsx";
 
 function ArtisanCard({ artisan }) {
+  if (!artisan) return null;
+
+  const { id, nom, ville, note, Specialty } = artisan;
+  const specialite = Specialty?.nom ?? "Spécialité non renseignée";
+
   return (
     <Link
-      to={`/artisans/${artisan.id}`}
-      className="block bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-4 border border-slate-100"
+      to={`/artisans/${id}`}
+      className="block border border-gray-200 rounded-xl p-4 bg-white hover:shadow-md transition-shadow"
     >
-      <div className="flex items-start gap-3">
-        <div className="w-12 h-12 rounded-full bg-[#0074c7] text-white flex items-center justify-center font-semibold">
-          {artisan.nom.slice(0, 2).toUpperCase()}
-        </div>
-        <div className="flex-1">
-          <div className="flex items-center justify-between gap-2 mb-1">
-            <h3 className="font-semibold text-sm md:text-base">
-              {artisan.nom}
-            </h3>
-            <RatingStars value={artisan.note ?? 0} />
-          </div>
-          <p className="text-xs text-slate-600 mb-1">
-            {artisan.specialite?.nom ?? artisan.specialite ?? "Spécialité"}
-          </p>
-          <p className="text-xs text-slate-500">{artisan.ville}</p>
-        </div>
+      <div className="flex flex-col gap-2">
+        <h3 className="font-semibold text-lg text-[#00497c]">{nom}</h3>
+        <RatingStars value={note} />
+        <p className="text-sm text-gray-700">{specialite}</p>
+        <p className="text-xs text-gray-500">{ville}</p>
       </div>
     </Link>
   );
 }
 
 export default ArtisanCard;
+
