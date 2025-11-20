@@ -1,45 +1,36 @@
 import { Routes, Route } from "react-router-dom";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
+import Layout from "./components/Layout.jsx";
+import HomePage from "./pages/HomePage.jsx";
+import CategoryPage from "./pages/CategoryPage.jsx";
+import ArtisanListPage from "./pages/ArtisanListPage.jsx";
+import ArtisanDetailPage from "./pages/ArtisanDetailPage.jsx";
+import LegalPage from "./pages/LegalPage.jsx";
+import NotFoundPage from "./pages/NotFoundPage.jsx";
 
-// Pages
-import Home from "./pages/Home";
-import Category from "./pages/Category";
-import ArtisanList from "./pages/ArtisanList";
-import Artisan from "./pages/Artisan";
-import Legal from "./pages/Legal";
-import NotFound from "./pages/NotFound";
-
-function App() {
+export default function App() {
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-
-      <main className="flex-grow">
-        <Routes>
-          <Route path="/" element={<Home />} />
-
-          {/* Catégories */}
-          <Route path="/categorie/:slug" element={<Category />} />
-
-          {/* Liste artisans */}
-          <Route path="/artisans" element={<ArtisanList />} />
-
-          {/* Fiche artisan */}
-          <Route path="/artisan/:id" element={<Artisan />} />
-
-          {/* Pages légales */}
-          <Route path="/legal/:type" element={<Legal />} />
-
-          {/* Page 404 */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </main>
-
-      <Footer />
-    </div>
+    <Layout>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/categorie/:slug" element={<CategoryPage />} />
+        <Route path="/artisans" element={<ArtisanListPage />} />
+        <Route path="/artisans/:id" element={<ArtisanDetailPage />} />
+        <Route
+          path="/mentions-legales"
+          element={<LegalPage title="Mentions légales" />}
+        />
+        <Route
+          path="/donnees-personnelles"
+          element={<LegalPage title="Données personnelles" />}
+        />
+        <Route
+          path="/accessibilite"
+          element={<LegalPage title="Accessibilité" />}
+        />
+        <Route path="/cookies" element={<LegalPage title="Cookies" />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </Layout>
   );
 }
-
-export default App;
 
