@@ -1,11 +1,26 @@
-export default function LegalPage({ title }) {
+import { useParams } from "react-router-dom";
+
+function LegalPage() {
+  const { slug } = useParams();
+
+  const titles = {
+    "mentions-legales": "Mentions légales",
+    "donnees-personnelles": "Données personnelles",
+    accessibilite: "Accessibilité",
+    cookies: "Cookies",
+  };
+
+  const title = titles[slug] || "Page légale";
+
   return (
-    <section className="space-y-3">
-      <h1 className="text-2xl font-semibold">{title}</h1>
-      <p className="text-sm text-slate-600">
-        Cette page est prévue pour être remplie par un cabinet spécialisé.
+    <div className="bg-white rounded-2xl p-5 shadow-sm">
+      <h1 className="text-xl font-semibold text-[#00497c] mb-2">{title}</h1>
+      <p className="text-sm text-gray-700">
+        Cette page est en construction. Son contenu sera complété par un cabinet
+        spécialisé ultérieurement.
       </p>
-      <p className="text-xs text-slate-500">Page en construction.</p>
-    </section>
+    </div>
   );
 }
+
+export default LegalPage;

@@ -1,97 +1,83 @@
-import { NavLink, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { Link, useNavigate, NavLink } from "react-router-dom";
+import { useEffect, useState } from "react";
+import SearchBar from "./SearchBar.jsx";
 
-const categories = [
-  { label: "Bâtiment", slug: "batiment" },
-  { label: "Services", slug: "services" },
-  { label: "Fabrication", slug: "fabrication" },
-  { label: "Alimentation", slug: "alimentation" },
-];
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
-export default function Header() {
-  const [query, setQuery] = useState("");
+function Header() {
+  const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    const trimmed = query.trim();
-    if (!trimmed) return;
-    navigate(`/artisans?q=${encodeURIComponent(trimmed)}`);
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const res = await fetch(`${API_URL}/categories`);
+        if (!res.ok) throw new Error("Erreur API catégories");
+        const data = await res.json();
+        setCategories(data);
+      } catch (err) {
+        console.error(err);
+        // fallback minimal pour ne pas casser l'UI
+        setCategories([
+          { id: 1, nom: "Bâtiment", slug: "batiment" },
+          { id: 2, nom: "Services", slug: "services" },
+          { id: 3, nom: "Fabrication", slug: "fabrication" },
+          { id: 4, nom: "Alimentation", slug: "alimentation" },
+        ]);
+      }
+    }
+    fetchCategories();
+  }, []);
+
+  function handleSearch(term) {
+    if (!term.trim()) return;
+    navigate(`/artisans?search=${encodeURIComponent(term)}`);
   }
 
-  const activeClasses = "text-blue-700 border-b-2 border-blue-600";
-  const baseClasses =
-    "px-3 py-2 text-sm font-medium text-slate-800 hover:text-blue-700 hover:bg-slate-100 rounded-md";
-
   return (
-    <header className="border-b bg-white/90 backdrop-blur sticky top-0 z-20">
-      <div className="max-w-6xl mx-auto flex items-center justify-between gap-4 px-4 py-3">
-        <NavLink to="/" className="flex items-center gap-2">
-          <div className="h-10 w-10 rounded-md bg-blue-700 text-white flex items-center justify-center font-semibold">
-            TA
-          </div>
-          <div className="flex flex-col">
-            <span className="font-semibold text-sm leading-tight uppercase tracking-wide">
-              Trouve ton artisan
-            </span>
-            <span className="text-[11px] text-slate-500">
-              Région Auvergne-Rhône-Alpes
-            </span>
-          </div>
-        </NavLink>
+    <header className="bg-[#00497c] text-white">
+      <div className="max-w-6xl mx-auto px-4 py-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        {/* Logo + titre */}
+        <div className="flex items-center gap-3">
+          <Link to="/" className="flex items-center gap-2">
+            <div className="w-10 h-10 rounded-full bg-[#0074c7] flex items-center justify-center font-bold text-lg">
+              TA
+            </div>
+            <div className="flex flex-col">
+              <span className="font-semibold leading-tight">
+                Trouve ton artisan
+              </span>
+              <span className="text-xs opacity-80">
+                Région Auvergne-Rhône-Alpes
+              </span>
+            </div>
+          </Link>
+        </div>
 
-        <nav className="hidden md:flex items-center gap-2">
+        {/* Menu catégories */}
+        <nav className="flex gap-3 text-sm flex-wrap">
           {categories.map((cat) => (
             <NavLink
-              key={cat.slug}
+              key={cat.id}
               to={`/categorie/${cat.slug}`}
               className={({ isActive }) =>
-                `${baseClasses} ${isActive ? activeClasses : ""}`
+                `px-2 py-1 rounded ${
+                  isActive ? "bg-[#0074c7]" : "hover:bg-[#0074c7]/70"
+                }`
               }
             >
-              {cat.label}
+              {cat.nom}
             </NavLink>
           ))}
         </nav>
 
-        <form
-          onSubmit={handleSubmit}
-          className="flex items-center gap-2 w-52 sm:w-64"
-        >
-          <input
-            type="search"
-            placeholder="Rechercher un artisan..."
-            className="w-full rounded-md border px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
-          <button
-            type="submit"
-            className="hidden sm:inline-flex rounded-md bg-blue-700 text-white text-sm px-3 py-1.5 hover:bg-blue-800"
-          >
-            OK
-          </button>
-        </form>
+        {/* Barre de recherche */}
+        <div className="w-full md:w-64">
+          <SearchBar onSearch={handleSearch} />
+        </div>
       </div>
-
-      {/* menu mobile */}
-      <nav className="flex md:hidden gap-1 border-t bg-slate-50 px-2 py-1 overflow-x-auto">
-        {categories.map((cat) => (
-          <NavLink
-            key={cat.slug}
-            to={`/categorie/${cat.slug}`}
-            className={({ isActive }) =>
-              `whitespace-nowrap px-3 py-1 text-xs font-medium rounded-full border ${
-                isActive
-                  ? "bg-blue-700 text-white border-blue-700"
-                  : "bg-white text-slate-800 hover:bg-blue-50"
-              }`
-            }
-          >
-            {cat.label}
-          </NavLink>
-        ))}
-      </nav>
     </header>
   );
 }
+
+export default Header;
