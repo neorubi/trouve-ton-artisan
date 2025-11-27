@@ -1,117 +1,106 @@
-const steps = [
-  {
-    number: 1,
-    title: "Choisir la catégorie",
-    text: "Sélectionnez une catégorie d’artisanat dans le menu (bâtiment, services, fabrication, alimentation).",
-  },
-  {
-    number: 2,
-    title: "Choisir un artisan",
-    text: "Parcourez la liste, lisez les fiches et repérez l’artisan qui correspond à votre besoin.",
-  },
-  {
-    number: 3,
-    title: "Envoyer le formulaire",
-    text: "Remplissez le formulaire de contact sur la fiche artisan avec votre demande.",
-  },
-  {
-    number: 4,
-    title: "Recevoir une réponse",
-    text: "L’artisan ou la région vous répond sous 48h avec les informations demandées.",
-  },
-];
+import { useEffect, useState } from "react";
+import ArtisanCard from "../components/ArtisanCard.jsx";
 
-const featuredArtisans = [
-  {
-    id: 1,
-    name: "Boucherie Dumont",
-    note: 4.5,
-    speciality: "Boucher",
-    city: "Lyon",
-  },
-  {
-    id: 2,
-    name: "Au pain chaud",
-    note: 4.8,
-    speciality: "Boulanger",
-    city: "Montélimar",
-  },
-  {
-    id: 3,
-    name: "Orville Salmons",
-    note: 5.0,
-    speciality: "Chauffagiste",
-    city: "Evian",
-  },
-];
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
-function Stars({ value }) {
-  const full = Math.round(value);
+function HomePage() {
+  const [topArtisans, setTopArtisans] = useState([]);
+
+  useEffect(() => {
+  async function fetchTop() {
+    try {
+      const res = await fetch(`${API_URL}/artisans?top=true`, {
+        headers: {
+          "X-API-Key": import.meta.env.VITE_API_KEY || "",
+        },
+      });
+
+      if (!res.ok) throw new Error("Erreur API top artisans");
+
+      const data = await res.json();
+      setTopArtisans(data.slice(0, 3));
+    } catch (err) {
+      console.error("Erreur API top artisans :", err);
+      setTopArtisans([]);
+    }
+  }
+
+  fetchTop();
+}, []);
+
+
+
+
+  const steps = [
+    {
+      num: 1,
+      title: "Choisir une catégorie",
+      text: "Sélectionnez le domaine d'activité dans le menu (Bâtiment, Services, Fabrication, Alimentation…).",
+    },
+    {
+      num: 2,
+      title: "Choisir un artisan",
+      text: "Parcourez la liste des artisans, consultez leurs notes et leurs spécialités.",
+    },
+    {
+      num: 3,
+      title: "Le contacter",
+      text: "Utilisez le formulaire de contact sur la fiche de l'artisan pour demander un devis ou des informations.",
+    },
+    {
+      num: 4,
+      title: "Recevoir une réponse",
+      text: "L'artisan s'engage à vous répondre sous 48 heures.",
+    },
+  ];
+
   return (
-    <div className="flex items-center gap-1 text-amber-500 text-xs">
-      {Array.from({ length: 5 }).map((_, i) => (
-        <span key={i}>{i < full ? "★" : "☆"}</span>
-      ))}
-      <span className="text-[11px] text-slate-600 ml-1">
-        {value.toFixed(1)}/5
-      </span>
+    <div className="space-y-8">
+      {/* Hero */}
+      <section className="bg-white rounded-2xl p-6 shadow-sm">
+        <h1 className="text-2xl md:text-3xl font-bold text-[#00497c] mb-2">
+          Comment trouver mon artisan ?
+        </h1>
+        <p className="text-sm text-gray-700 max-w-2xl">
+          Cette plateforme vous permet de trouver rapidement un artisan de
+          confiance en Auvergne-Rhône-Alpes, en quelques étapes simples.
+        </p>
+
+        <div className="mt-5 grid gap-4 md:grid-cols-4">
+          {steps.map((step) => (
+            <div
+              key={step.num}
+              className="bg-[#f1f8ff] border border-[#0074c7]/10 rounded-xl p-4"
+            >
+              <div className="w-8 h-8 rounded-full bg-[#0074c7] text-white flex items-center justify-center font-semibold mb-2">
+                {step.num}
+              </div>
+              <h3 className="font-semibold text-sm mb-1">{step.title}</h3>
+              <p className="text-xs text-gray-700">{step.text}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Artisans du mois */}
+      <section>
+        <h2 className="text-xl font-semibold text-[#00497c] mb-3">
+          Les artisans du mois
+        </h2>
+        {topArtisans.length === 0 ? (
+          <p className="text-sm text-gray-600">
+            Les artisans du mois seront bientôt disponibles.
+          </p>
+        ) : (
+          <div className="grid gap-4 md:grid-cols-3">
+            {topArtisans.map((a) => (
+              <ArtisanCard key={a.id} artisan={a} />
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }
 
-export default function HomePage() {
-  return (
-    <section className="space-y-10">
-      <header className="space-y-3">
-        <p className="text-xs uppercase tracking-[0.25em] text-blue-700 font-semibold">
-          Plateforme régionale
-        </p>
-        <h1 className="text-3xl sm:text-4xl font-bold text-slate-900">
-          Comment trouver mon artisan ?
-        </h1>
-        <p className="text-sm sm:text-base text-slate-600 max-w-2xl">
-          Trouvez facilement un artisan en Auvergne-Rhône-Alpes, comparez les
-          fiches et contactez-le en quelques clics. Le site est pensé pour être
-          simple, accessible et utilisable sur mobile.
-        </p>
-      </header>
-
-      <div className="grid gap-4 md:grid-cols-4">
-        {steps.map((step) => (
-          <article
-            key={step.number}
-            className="bg-white rounded-xl shadow-sm border p-4 flex flex-col gap-2"
-          >
-            <div className="h-8 w-8 rounded-full bg-blue-700 text-white flex items-center justify-center text-sm font-semibold">
-              {step.number}
-            </div>
-            <h2 className="text-sm font-semibold">{step.title}</h2>
-            <p className="text-xs text-slate-600">{step.text}</p>
-          </article>
-        ))}
-      </div>
-
-      <section>
-        <h2 className="text-xl font-semibold mb-3">Les artisans du mois</h2>
-        <div className="grid gap-4 md:grid-cols-3">
-          {featuredArtisans.map((a) => (
-            <article
-              key={a.id}
-              className="bg-white rounded-xl shadow-sm border p-4 space-y-2"
-            >
-              <h3 className="font-semibold text-sm">{a.name}</h3>
-              <Stars value={a.note} />
-              <p className="text-xs text-slate-600">
-                {a.speciality} — {a.city}
-              </p>
-              <p className="text-[11px] text-slate-500">
-                (Cette section sera ensuite alimentée dynamiquement par
-                l&apos;API.)
-              </p>
-            </article>
-          ))}
-        </div>
-      </section>
-    </section>
-  );
-}
+export default HomePage;
