@@ -7,25 +7,35 @@ function HomePage() {
   const [topArtisans, setTopArtisans] = useState([]);
 
   useEffect(() => {
-    async function fetchTop() {
-      try {
-        const res = await fetch(`${API_URL}/artisans?top=true`);
-        if (!res.ok) throw new Error("Erreur API top artisans");
-        const data = await res.json();
-        setTopArtisans(data.slice(0, 3));
-      } catch (err) {
-        console.error(err);
-        setTopArtisans([]);
-      }
+  async function fetchTop() {
+    try {
+      const res = await fetch(`${API_URL}/artisans?top=true`, {
+        headers: {
+          "X-API-Key": import.meta.env.VITE_API_KEY || "",
+        },
+      });
+
+      if (!res.ok) throw new Error("Erreur API top artisans");
+
+      const data = await res.json();
+      setTopArtisans(data.slice(0, 3));
+    } catch (err) {
+      console.error("Erreur API top artisans :", err);
+      setTopArtisans([]);
     }
-    fetchTop();
-  }, []);
+  }
+
+  fetchTop();
+}, []);
+
+
+
 
   const steps = [
     {
       num: 1,
       title: "Choisir une catégorie",
-      text: "Sélectionnez le domaine d’activité dans le menu (Bâtiment, Services, Fabrication, Alimentation…).",
+      text: "Sélectionnez le domaine d'activité dans le menu (Bâtiment, Services, Fabrication, Alimentation…).",
     },
     {
       num: 2,
@@ -35,12 +45,12 @@ function HomePage() {
     {
       num: 3,
       title: "Le contacter",
-      text: "Utilisez le formulaire de contact sur la fiche de l’artisan pour demander un devis ou des informations.",
+      text: "Utilisez le formulaire de contact sur la fiche de l'artisan pour demander un devis ou des informations.",
     },
     {
       num: 4,
       title: "Recevoir une réponse",
-      text: "L’artisan s’engage à vous répondre sous 48 heures.",
+      text: "L'artisan s'engage à vous répondre sous 48 heures.",
     },
   ];
 
