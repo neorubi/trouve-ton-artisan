@@ -9,14 +9,34 @@ function CategoryPage() {
   const [artisans, setArtisans] = useState([]);
   const [categoryLabel, setCategoryLabel] = useState("");
 
+  // ⭐ SEO dynamique — DOIT être placé ici
+  useEffect(() => {
+    if (!categoryLabel) return;
+
+    document.title = `Artisans — ${categoryLabel} | Trouve ton artisan`;
+
+    const meta = document.querySelector("meta[name='description']");
+    if (meta) {
+      meta.setAttribute(
+        "content",
+        `Trouvez les artisans spécialisés dans la catégorie ${categoryLabel} en Auvergne-Rhône-Alpes.`
+      );
+    }
+  }, [categoryLabel]);
+
+  // ⭐ Récupération API
   useEffect(() => {
     async function fetchArtisans() {
       try {
-        const res = await fetch(`${API_URL}/artisans`);
+        const res = await fetch(`${API_URL}/artisans`, {
+          headers: {
+            "X-API-Key": import.meta.env.VITE_API_KEY || "",
+          },
+        });
         if (!res.ok) throw new Error("Erreur API artisans");
         const data = await res.json();
 
-        // On filtre côté front en fonction du slug de la catégorie
+        // On filtre par catégorie (slug)
         const filtered = data.filter(
           (a) => a.Specialty?.Category?.slug === categorieSlug
         );
@@ -25,7 +45,6 @@ function CategoryPage() {
         if (filtered[0]?.Specialty?.Category?.nom) {
           setCategoryLabel(filtered[0].Specialty.Category.nom);
         } else {
-          // fallback simple
           setCategoryLabel(categorieSlug);
         }
       } catch (err) {
@@ -33,6 +52,7 @@ function CategoryPage() {
         setArtisans([]);
       }
     }
+
     fetchArtisans();
   }, [categorieSlug]);
 
