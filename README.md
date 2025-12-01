@@ -1,39 +1,126 @@
-# Trouve ton artisan
+# 🛠️ Trouve ton artisan — Plateforme régionale AURA
 
-Plateforme (AURA) pour trouver un artisan, consulter sa fiche et le contacter.
+Projet réalisé dans le cadre du devoir bilan du titre professionnel **Développeur Web & Web Mobile**.
 
-## Prérequis
-- Node.js >= 18
-- MySQL (ou MariaDB)
+Ce site permet aux particuliers de **trouver facilement un artisan** en Auvergne-Rhône-Alpes, selon une catégorie ou une spécialité, et de le **contacter via un formulaire** dédié.
 
-## Démarrage rapide (backend + BDD)
+---
+
+## 🚀 Fonctionnalités principales
+
+- Consultation des artisans par **catégorie**
+- Recherche d’un artisan par **nom**
+- Affichage d’une **fiche artisan complète** :
+  - nom
+  - note + étoiles
+  - spécialité
+  - catégorie
+  - localisation
+  - à propos
+  - site web
+  - formulaire de contact
+- Affichage des **artisans du mois**
+- Navigation complète par **React Router**
+- Appels API sécurisés via **clé API**
+
+---
+
+## 🧱 Technologies utilisées
+
+### Frontend
+- React.js
+- Vite
+- React Router
+- TailwindCSS
+- Fetch API
+
+### Backend
+- Node.js
+- Express.js
+- Sequelize (ORM)
+- MySQL ou MariaDB
+- Middleware de sécurité (API Key)
+
+---
+
+## ⚙️ Installation du projet
+
+### 1) Cloner le repository
 
 ```bash
-# 1) BDD (dans MySQL)
-mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS artisans_db CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
-mysql -u root -p artisans_db < database/create.sql
-mysql -u root -p artisans_db < database/seed.sql
-
-# 2) API
+git clone https://github.com/TON-REPO.git
+cd trouve-ton-artisan
+🗄️ Installation du backend
+bash
+Copier le code
 cd backend
-cp .env.example .env
-# Édite .env selon ta config MySQL et choisis une API_KEY
 npm install
-npm run start
+Créer un fichier .env :
 
-# Test
-curl http://localhost:4000/categories
-curl -H "X-API-Key: <ta_cle>" "http://localhost:4000/artisans?search=lyon"
-```
+ini
+Copier le code
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=trouve-ton-artisan
+DB_USER=root
+DB_PASS=
+API_KEY=VOTRE_CLE_API
+Lancer le backend :
 
-## Endpoints
-- `GET /categories`
-- `GET /specialites?categorie=:id`
-- `GET /artisans?search=&categorie=&specialite=&ville=&top=`
-- `GET /artisans/:id`
-- `POST /artisans/:id/contact` (body: `{ nom, email, objet, message }`)
+bash
+Copier le code
+npm run dev
+API disponible sur : http://localhost:4000
 
-## Frontend (React + Tailwind)
-À initialiser ensuite (Vite + React + Tailwind). Le header devra charger les libellés des catégories via `GET /categories`.
+💻 Installation du frontend
+bash
+Copier le code
+cd frontend
+npm install
+Créer un fichier .env :
 
-// TODO: add logging
+ini
+Copier le code
+VITE_API_URL=http://localhost:4000
+VITE_API_KEY=VOTRE_CLE_API
+Lancer le site :
+
+bash
+Copier le code
+npm run dev
+Site disponible sur : http://localhost:5173
+
+🗃️ Base de données
+Le projet utilise une base MySQL / MariaDB comprenant :
+
+Table categories
+
+Table specialties
+
+Table artisans
+
+Le script SQL se trouve dans :
+/backend/database/create.sql
+/backend/database/seed.sql
+
+🔒 Sécurité
+Accès à l’API protégé par une clé API
+
+Middleware requireApiKey dans Express
+
+Prévention des attaques CSRF via absence de cookies cross-site
+
+Prévention des injections SQL grâce à Sequelize
+
+Sécurité backend et frontend séparée
+
+🚀 Déploiement (à prévoir)
+Frontend → Vercel
+
+Backend → Render / Railway
+
+Base de données → Planetscale / CleverCloud
+
+👤 Auteur
+Projet réalisé par Rubino Florent,
+Dans le cadre du TP Développeur Web.
