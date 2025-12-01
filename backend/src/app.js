@@ -37,16 +37,22 @@ app.use("/artisans", contactRoute);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 4000;
+
 (async () => {
   try {
     await sequelize.authenticate();
     console.log("DB connected.");
-    app.listen(PORT, () => console.log(`API running on http://localhost:${PORT}`));
+
+    app.listen(PORT, () => 
+      console.log(`API running on port ${PORT}`)
+    );
+
   } catch (e) {
     console.error("DB error:", e);
     process.exit(1);
   }
 })();
+
 
 // TODO: add logging system
 
