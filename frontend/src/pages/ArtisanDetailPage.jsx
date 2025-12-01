@@ -15,6 +15,22 @@ function ArtisanDetailPage() {
   });
   const [status, setStatus] = useState(null);
 
+  // SEO dynamique
+useEffect(() => {
+  if (!artisan) return;
+
+  document.title = `${artisan.nom} — Artisan en ${artisan.Specialty?.nom} | Trouve ton artisan`;
+
+  const meta = document.querySelector("meta[name='description']");
+  if (meta) {
+    meta.setAttribute(
+      "content",
+      `Découvrez ${artisan.nom}, artisan spécialisé en ${artisan.Specialty?.nom} situé à ${artisan.ville}. Contactez-le facilement via notre plateforme.`
+    );
+  }
+}, [artisan]);
+
+
   useEffect(() => {
     async function fetchArtisan() {
       try {
