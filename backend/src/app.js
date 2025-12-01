@@ -42,16 +42,16 @@ const PORT = process.env.PORT || 4000;
   try {
     await sequelize.authenticate();
     console.log("DB connected.");
-
-    app.listen(PORT, () => 
-      console.log(`API running on port ${PORT}`)
-    );
-
   } catch (e) {
-    console.error("DB error:", e);
-    process.exit(1);
+    console.error("DB connection failed:", e.message);
+    // En prod (Render), on continue quand même pour que l'API démarre.
   }
+
+  app.listen(PORT, () => {
+    console.log(`API running on port ${PORT}`);
+  });
 })();
+
 
 
 // TODO: add logging system
