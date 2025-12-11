@@ -5,7 +5,6 @@ import cors from "cors";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
 import { sequelize } from "./config/db.js";
-import { requireApiKey } from "./middleware/apiKey.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 
 import categoriesRoute from "./routes/categories.js";
@@ -21,7 +20,7 @@ app.use(express.json());
 app.use(morgan("dev"));
 app.use(rateLimit({ windowMs: 60 * 1000, limit: 100 }));
 
-// 🌍 CORS SIMPLE : on autorise toutes les origines (pour ton projet CEF c'est ok)
+// 🌍 CORS très simple : on autorise toutes les origines
 app.use(
   cors({
     origin: "*",
@@ -30,23 +29,7 @@ app.use(
   })
 );
 
-// 🔑 API Key : on laisse passer OPTIONS + /categories, on protège le reste
-app.use((req, res, next) => {
-  // Preflight CORS → on répond sans exiger la clé
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(204);
-  }
-
-  // /categories accessible sans clé (pour ton menu)
-  if (req.path.startsWith("/categories")) {
-    return next();
-  }
-
-  // Tout le reste nécessite la clé API
-  return requireApiKey(req, res, next);
-});
-
-// ✅ Routes
+// ✅ Routes publiques (PAS de requireApiKey pour le moment)
 app.get("/", (req, res) =>
   res.json({ ok: true, name: "Trouve ton artisan API" })
 );
