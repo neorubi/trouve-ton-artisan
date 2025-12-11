@@ -21,23 +21,10 @@ app.use(express.json());
 app.use(morgan("dev"));
 app.use(rateLimit({ windowMs: 60 * 1000, limit: 100 }));
 
-// 🌍 CORS : n'autoriser que ton front + localhost
-const allowedOrigins = [
-  "http://localhost:5173",
-  "http://localhost:4173",
-  "https://trouve-ton-artisan-2h0pt4tw0-rubis-projects-7fffbfc3.vercel.app",
-];
-
+// 🌍 CORS SIMPLE : on autorise toutes les origines (pour ton projet CEF c'est ok)
 app.use(
   cors({
-    origin: (origin, callback) => {
-      // Autoriser les requêtes sans origin (Postman, curl…)
-      if (!origin || allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-      console.log("CORS blocked origin:", origin);
-      return callback(new Error("Not allowed by CORS"));
-    },
+    origin: "*",
     methods: ["GET", "POST", "OPTIONS"],
     allowedHeaders: ["Content-Type", "X-API-Key"],
   })
@@ -45,17 +32,17 @@ app.use(
 
 // 🔑 API Key : on laisse passer OPTIONS + /categories, on protège le reste
 app.use((req, res, next) => {
-  // Preflight CORS → pas d'API key exigée
+  // Preflight CORS → on répond sans exiger la clé
   if (req.method === "OPTIONS") {
-    return next();
+    return res.sendStatus(204);
   }
 
-  // /categories accessible sans clé (pour le menu par ex.)
+  // /categories accessible sans clé (pour ton menu)
   if (req.path.startsWith("/categories")) {
     return next();
   }
 
-  // Tout le reste nécessite la clé
+  // Tout le reste nécessite la clé API
   return requireApiKey(req, res, next);
 });
 
